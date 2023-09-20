@@ -1,9 +1,11 @@
 import express from 'express';
 import Database from 'better-sqlite3';
+const cors = require('cors');
 
 const app = express();
 
 app.use(express.json());
+app.use(cors())
 
 app.get('/', (req, res) => {
   return res.status(200).send({'message': 'SHIPTIVITY API. Read documentation to see API docs'});
@@ -124,13 +126,31 @@ app.put('/api/v1/clients/:id', (req, res) => {
   let { status, priority } = req.body;
   let clients = db.prepare('select * from clients').all();
   const client = clients.find(client => client.id === id);
+  
 
   /* ---------- Update code below ----------*/
+  
+  if (status) {
+    // If status is provided, update the client's status
+    if (status !== 'backlog' && status !== 'in-progress' && status !== 'complete') {
+      return res.status(400).send({
+        'message': 'Invalid status provided.',
+        'long_message': 'Status can only be one of the following: [backlog | in-progress | complete].',
+      });
+    }
+    db.prepare('update clients set status = ? where id = ?').run(status, id);
+    client.status = status;
+  }
 
 
+  
 
+  
   return res.status(200).send(clients);
 });
+
+// ... Rest of your code remains the same
+
 
 app.listen(3001);
 console.log('app running on port ', 3001);
