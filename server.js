@@ -149,8 +149,6 @@ app.put('/api/v1/clients/:id', (req, res) => {
   return res.status(200).send(clients);
 });
 
-// ... Rest of your code remains the same
-
 
 app.listen(3001);
 console.log('app running on port ', 3001);
